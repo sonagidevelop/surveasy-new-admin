@@ -18,6 +18,7 @@
           <th>고객명</th>
           <th>선택신분</th>
           <th>상세보기</th>
+          <th>엑세스</th>
           <th>삭제</th>
         </tr>
       </thead>
@@ -50,6 +51,7 @@
           <td>{{item.username}}</td>
           <td>{{this.$store.state.maps.surveyIdentityMap[item.identity]}}</td>
           <td><button @click="moveToSurveyDetailPage(item.id, item)">상세</button></td>
+          <td><button @click="sendWrongAccessMail(item.id)">발송</button></td>
           <td><button @click="deleteSurvey(item.id)">X</button></td>
           <!-- <td><button @click="updateSurvey(item.id, item.progress)">적용</button></td> -->
         </tr>
@@ -177,6 +179,22 @@ export default {
       if (this.endPage < this.totalPages) {
         this.startPage += 10;
         this.endPage = Math.min(this.startPage + 9, this.totalPages);
+      }
+    },
+
+    async sendWrongAccessMail(id) {
+      try {
+        if(window.confirm("엑세스 링크 오류 안내 메일을 발송하시겠습니까?")) {
+           await instanceWithAuth.get("/survey/admin/" + id + "/mail/access")
+          .then(
+            alert('메일 발송이 완료되었습니다'),
+            this.listAdminSurveys()
+          )
+        } else {
+            return;
+        }
+      } catch(err) {
+        console.log(err)
       }
     },
 
